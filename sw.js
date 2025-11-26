@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'ironpulse-v1';
+const CACHE_NAME = 'ironpulse-v2';
 const urlsToCache = [
   './',
   './index.html',
@@ -7,6 +7,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting(); // Force activation
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -41,4 +42,5 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
+  return self.clients.claim();
 });
