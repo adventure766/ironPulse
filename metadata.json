@@ -1,0 +1,8 @@
+{
+  "name": "IronPulse AI",
+  "description": "A comprehensive fitness companion with AI coaching, workout tutorials, diet tracking, and gamified leaderboards.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
