@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { UserProfile, WorkoutLog, DietLog, SleepData, WeightEntry } from './types';
 import Dashboard from './components/Dashboard';
@@ -45,7 +46,9 @@ const App: React.FC = () => {
     targetDailySteps: 10000,
     
     credits: 500,
-    earnings: 1250
+    earnings: 1250,
+
+    isOnboardingCompleted: true // Set to true for mock user, new users via Auth will be false (or undefined)
   };
 
   const [user, setUser] = useState<UserProfile>(defaultUser);
@@ -144,8 +147,36 @@ const App: React.FC = () => {
     </button>
   );
 
+  const MobileNavItem = ({ id, icon, active }: { id: string, icon: string, active: boolean }) => (
+    <button 
+      onClick={() => setCurrentView(id)} 
+      className={`relative p-2 transition-all duration-300 ${active ? 'text-white -translate-y-2 scale-110' : 'text-gray-500 hover:text-gray-300'}`}
+    >
+      <div className={`text-2xl ${active ? 'drop-shadow-[0_0_10px_rgba(16,185,129,0.5)]' : ''}`}>
+          <i className={`fas ${icon}`}></i>
+      </div>
+      {active && (
+          <span className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-[0_0_5px_#10b981]"></span>
+      )}
+    </button>
+  );
+
   if (!isAuthenticated) {
     return <Auth onLogin={handleAuthSuccess} />;
+  }
+
+  // --- ONBOARDING INTERCEPTOR ---
+  if (!user.isOnboardingCompleted) {
+      return (
+          <div className="min-h-screen bg-gym-900 text-gray-100 font-sans selection:bg-gym-500 selection:text-white">
+              <Settings 
+                  user={user} 
+                  setUser={setUser} 
+                  mode="onboarding" 
+                  onOnboardingComplete={() => setCurrentView('dashboard')}
+              />
+          </div>
+      );
   }
 
   return (
@@ -180,18 +211,18 @@ const App: React.FC = () => {
         </div>
       </aside>
 
-      {/* Mobile Bottom Nav */}
-      <div className="md:hidden fixed bottom-0 left-0 w-full bg-gym-800 border-t border-gym-700 z-50 px-4 py-2 flex justify-between overflow-x-auto">
-            <button onClick={() => setCurrentView('dashboard')} className={`p-2 ${currentView === 'dashboard' ? 'text-gym-500' : 'text-gray-400'}`}><i className="fas fa-chart-line text-lg"></i></button>
-            <button onClick={() => setCurrentView('tracker')} className={`p-2 ${currentView === 'tracker' ? 'text-gym-500' : 'text-gray-400'}`}><i className="fas fa-edit text-lg"></i></button>
-            <button onClick={() => setCurrentView('live-classes')} className={`p-2 ${currentView === 'live-classes' ? 'text-gym-500' : 'text-gray-400'}`}><i className="fas fa-broadcast-tower text-lg"></i></button>
-            <button onClick={() => setCurrentView('community')} className={`p-2 ${currentView === 'community' ? 'text-gym-500' : 'text-gray-400'}`}><i className="fas fa-comments text-lg"></i></button>
-            <button onClick={() => setCurrentView('advisor')} className={`p-2 ${currentView === 'advisor' ? 'text-gym-500' : 'text-gray-400'}`}><i className="fas fa-robot text-lg"></i></button>
-            <button onClick={() => setCurrentView('leaderboard')} className={`p-2 ${currentView === 'leaderboard' ? 'text-gym-500' : 'text-gray-400'}`}><i className="fas fa-trophy text-lg"></i></button>
+      {/* Floating Mobile Bottom Nav */}
+      <div className="md:hidden fixed bottom-6 left-4 right-4 bg-gym-900/95 backdrop-blur-xl border border-white/10 z-50 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex justify-between items-center px-4 py-3">
+            <MobileNavItem id="dashboard" icon="fa-chart-line" active={currentView === 'dashboard'} />
+            <MobileNavItem id="tracker" icon="fa-edit" active={currentView === 'tracker'} />
+            <MobileNavItem id="live-classes" icon="fa-broadcast-tower" active={currentView === 'live-classes'} />
+            <MobileNavItem id="community" icon="fa-comments" active={currentView === 'community'} />
+            <MobileNavItem id="advisor" icon="fa-robot" active={currentView === 'advisor'} />
+            <MobileNavItem id="settings" icon="fa-bars" active={currentView === 'settings'} />
       </div>
 
       {/* Main Content Area */}
-      <main className="flex-1 md:ml-24 p-4 md:p-8 pb-20 md:pb-8 max-w-7xl mx-auto w-full animate-fade-in">
+      <main className="flex-1 md:ml-24 p-4 md:p-8 pb-32 md:pb-8 max-w-7xl mx-auto w-full animate-fade-in">
          <header className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">

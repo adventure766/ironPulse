@@ -1,4 +1,5 @@
 
+
 export interface UserProfile {
   name: string;
   age: number;
@@ -28,6 +29,9 @@ export interface UserProfile {
   // Economy
   credits: number; // For buying gifts
   earnings: number; // From received gifts
+
+  // App State
+  isOnboardingCompleted?: boolean;
 }
 
 export interface WorkoutLog {

@@ -5,10 +5,12 @@ import { UserProfile } from '../types';
 interface SettingsProps {
   user: UserProfile;
   setUser: (u: UserProfile) => void;
+  mode?: 'settings' | 'onboarding';
+  onOnboardingComplete?: () => void;
 }
 
-const Settings: React.FC<SettingsProps> = ({ user, setUser }) => {
-  const [activeTab, setActiveTab] = useState<'profile' | 'account'>('account');
+const Settings: React.FC<SettingsProps> = ({ user, setUser, mode = 'settings', onOnboardingComplete }) => {
+  const [activeTab, setActiveTab] = useState<'profile' | 'account'>(mode === 'onboarding' ? 'profile' : 'account');
   
   // --- Wizard State ---
   const [step, setStep] = useState(1);
@@ -58,6 +60,15 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser }) => {
     if (step > 1) setStep(step - 1);
   };
 
+  const handleCompleteProfile = () => {
+    setUser({ ...user, isOnboardingCompleted: true });
+    if (onOnboardingComplete) {
+      onOnboardingComplete();
+    } else {
+      alert("Settings Saved!");
+    }
+  };
+
   // Mock Export Data
   const handleExportData = () => {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ user, notifications }, null, 2));
@@ -86,24 +97,28 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser }) => {
       
       {/* Header & Tabs */}
       <div className="text-center mb-8">
-         <h2 className="text-3xl font-extrabold text-white mb-6">Settings</h2>
+         <h2 className="text-3xl font-extrabold text-white mb-6">
+           {mode === 'onboarding' ? 'Welcome Aboard' : 'Settings'}
+         </h2>
          
-         <div className="inline-flex bg-gym-800 p-1.5 rounded-xl border border-gym-700 shadow-lg">
-             <button 
-                onClick={() => setActiveTab('account')}
-                className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2
-                ${activeTab === 'account' ? 'bg-gym-600 text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-gym-700'}`}
-             >
-                 <i className="fas fa-id-card"></i> Account & Data
-             </button>
-             <button 
-                onClick={() => setActiveTab('profile')}
-                className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2
-                ${activeTab === 'profile' ? 'bg-gym-600 text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-gym-700'}`}
-             >
-                 <i className="fas fa-sliders-h"></i> Personalization
-             </button>
-         </div>
+         {mode === 'settings' && (
+           <div className="inline-flex bg-gym-800 p-1.5 rounded-xl border border-gym-700 shadow-lg">
+               <button 
+                  onClick={() => setActiveTab('account')}
+                  className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2
+                  ${activeTab === 'account' ? 'bg-gym-600 text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-gym-700'}`}
+               >
+                   <i className="fas fa-id-card"></i> Account & Data
+               </button>
+               <button 
+                  onClick={() => setActiveTab('profile')}
+                  className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2
+                  ${activeTab === 'profile' ? 'bg-gym-600 text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-gym-700'}`}
+               >
+                   <i className="fas fa-sliders-h"></i> Personalization
+               </button>
+           </div>
+         )}
       </div>
 
       {activeTab === 'profile' ? (
@@ -314,7 +329,7 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser }) => {
                     </button>
                 ) : (
                     <button 
-                        onClick={() => alert("Settings Saved!")}
+                        onClick={handleCompleteProfile}
                         className="px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/20 transition transform hover:scale-105 flex items-center gap-2"
                     >
                         Complete Profile <i className="fas fa-check"></i>
