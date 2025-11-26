@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { UserProfile, WorkoutLog, DietLog, SleepData, WeightEntry } from './types';
 import Dashboard from './components/Dashboard';
@@ -158,15 +157,11 @@ const App: React.FC = () => {
   const MobileNavItem = ({ id, icon, active }: { id: string, icon: string, active: boolean }) => (
     <button 
       onClick={() => setCurrentView(id)} 
-      className={`relative flex items-center justify-center w-12 h-12 rounded-full transition-all duration-500
-      ${active ? 'bg-gym-500 text-white shadow-[0_0_15px_#10b981] -translate-y-4 scale-110' : 'text-gray-400 hover:text-white'}`}
+      className={`relative flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 group
+      ${active ? 'text-white' : 'text-gray-400 hover:text-white'}`}
     >
-      <i className={`fas ${icon} text-xl`}></i>
-      {active && (
-          <span className="absolute -bottom-6 text-[9px] font-bold text-emerald-400 tracking-wider animate-fade-in whitespace-nowrap bg-black/50 px-2 rounded-full backdrop-blur-sm">
-             {id.charAt(0).toUpperCase() + id.slice(1).replace('-', ' ')}
-          </span>
-      )}
+      <div className={`absolute inset-0 bg-gym-500 rounded-full opacity-0 scale-50 transition-all duration-300 ${active ? 'opacity-100 scale-100 shadow-[0_0_15px_#10b981]' : ''}`}></div>
+      <i className={`fas ${icon} text-xl relative z-10 transition-transform ${active ? 'scale-90' : 'group-hover:scale-110'}`}></i>
     </button>
   );
 
@@ -226,8 +221,8 @@ const App: React.FC = () => {
         </div>
       </aside>
 
-      {/* Floating Mobile Dock */}
-      <div className="md:hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[90%] max-w-sm bg-gym-800/80 backdrop-blur-xl border border-white/10 z-50 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.6)] flex justify-between items-center px-6 py-3 pb-safe">
+      {/* Floating Mobile Dock (Glassmorphic) */}
+      <div className="md:hidden fixed bottom-6 left-4 right-4 h-16 bg-black/60 backdrop-blur-2xl border border-white/10 z-50 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.6)] flex justify-around items-center px-2 pb-safe">
             <MobileNavItem id="dashboard" icon="fa-chart-line" active={currentView === 'dashboard'} />
             <MobileNavItem id="tracker" icon="fa-edit" active={currentView === 'tracker'} />
             <MobileNavItem id="live-classes" icon="fa-video" active={currentView === 'live-classes'} />
@@ -254,7 +249,7 @@ const App: React.FC = () => {
               </p>
             </div>
             <div 
-                className="w-10 h-10 rounded-full flex items-center justify-center border bg-gym-700 border-gym-600 cursor-pointer"
+                className="w-10 h-10 rounded-full flex items-center justify-center border bg-gym-700 border-gym-600 cursor-pointer shadow-lg active:scale-95 transition"
                 onClick={() => setCurrentView('settings')}
             >
                <i className="fas fa-user text-gym-400"></i>
