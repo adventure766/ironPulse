@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'ironpulse-v2';
+const CACHE_NAME = 'ironpulse-v3';
 const urlsToCache = [
   './',
   './index.html',
